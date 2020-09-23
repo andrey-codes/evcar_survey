@@ -104,7 +104,7 @@ ev_survey_results$State <-toupper(ev_survey_results$State)  # Make Uppercase
 ev_survey_results$City <-toupper(ev_survey_results$City)    # Make Uppercase
 
 # Get the State Abreviations from a little CSV I made.
-state_abbreviations <- read.csv('state_abbreviations.csv', header = TRUE, stringsAsFactors = FALSE)
+state_abbreviations <- read.csv('misc/state_abbreviations.csv', header = TRUE, stringsAsFactors = FALSE)
 
 # Makes a data frame with the correct number of obsevations as indices:
 observations <- c(1:nrow(ev_survey_results))  
@@ -143,7 +143,7 @@ hist(as.numeric(suburban_people$attr_Practicality),
 hist(as.numeric(ev_survey_results$attr_Practicality), 
      main = "How practical do people find EVs?")
 
-tapply(ResponseId, State, length)
+
 
 
 
