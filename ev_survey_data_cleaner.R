@@ -12,7 +12,7 @@ library(dplyr)
 # =================================================================
 
 # NOTE: don't forget to rename the CSV file
-ev_survey_data <- read.csv('electric_car_survey.csv',
+ev_survey_data <- read.csv('ev_survey_data_raw.csv',
                     header = TRUE,
                     stringsAsFactors = FALSE
                     )
@@ -64,13 +64,13 @@ ev_survey_results <- ev_survey_results[!(is.na(ev_survey_results$buy_electric_ne
 
 # Creates a numeric scale for our Likert Values
 #     Do we want to do 1 - 7 or -3 to + 3?
-likert_revalues <- c("Strongly Disagree" = 1,
-                     "Disagree" = 2,
-                     "Somewhat disagree" = 3,
-                     "Neither agree nor disagree" = 4,
-                     "Somewhat agree" = 5,
-                     "Agree" = 6,
-                     "Strongly agree" = 7)
+likert_revalues <- c("Strongly Disagree" = -3,
+                     "Disagree" = -2,
+                     "Somewhat disagree" = -1,
+                     "Neither agree nor disagree" = 0,
+                     "Somewhat agree" = 1,
+                     "Agree" = 2,
+                     "Strongly agree" = 3)
 
 # Applies this scale to all of our Likert-based columns:
 ev_survey_results$attr_Price           <- revalue(ev_survey_results$attr_Price, likert_revalues)
@@ -139,7 +139,7 @@ for ( i in observations ) {
 # Export Clean Data
 # =================================================================
 write.csv( x = ev_survey_results,
-           file = 'cleaner_ev_data.csv',
+           file = 'ev_survey_data_cleaner.csv',
            row.names = FALSE)
 
 
