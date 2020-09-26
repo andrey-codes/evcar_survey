@@ -1,4 +1,4 @@
-#
+
 # This is a script for processing the data from the Electric Car Survey
 
 # Packages:
@@ -26,8 +26,6 @@ ev_survey_data <- read.csv('electric_car_survey.csv',
 #    We only want to analyze the responses from the "anonymous" channel.
 #    This also cleans out that second row which has some other meta data and stuff.
 ev_survey_results <- ev_survey_data %>% filter(ev_survey_data$DistributionChannel == "anonymous")
-
-
 
 # Get just the columns we want to analyze:
 ev_survey_results <- ev_survey_results[ , c("ResponseId",
@@ -59,6 +57,9 @@ colnames(ev_survey_results)[colnames(ev_survey_results) == "Q14"] <- "Auto_Worke
 
 
 
+# Removes those who did not answer "buy_electric_next"
+ev_survey_results <- ev_survey_results[!(is.na(ev_survey_results$buy_electric_next) | ev_survey_results$buy_electric_next==""), ]
+
 # Convert Likert Values to numeric ------------- ------------- ------------- -------------
 
 # Creates a numeric scale for our Likert Values
@@ -70,7 +71,6 @@ likert_revalues <- c("Strongly Disagree" = 1,
                      "Somewhat agree" = 5,
                      "Agree" = 6,
                      "Strongly agree" = 7)
-likert_revalues <- as.numeric(likert_revalues)
 
 # Applies this scale to all of our Likert-based columns:
 ev_survey_results$attr_Price           <- revalue(ev_survey_results$attr_Price, likert_revalues)
@@ -81,12 +81,27 @@ ev_survey_results$attr_CarbonFootprint <- revalue(ev_survey_results$attr_CarbonF
 ev_survey_results$buy_this_year        <- revalue(ev_survey_results$buy_this_year, likert_revalues)
 ev_survey_results$buy_electric_next    <- revalue(ev_survey_results$buy_electric_next, likert_revalues)
 
-  
 
+# Revalues Education as numbers  ------------- ------------- ------------- -------------
+# In case we want to see if there is a correlation between amount of education and a certain attribute.
+# Don't really know if we need this.
+education_num <-c("No High School" = 0,
+                  "High School Diploma of GED" = 1,
+                  "Some College" = 2,
+                  "Associate Degree" = 3,
+                  "Bachelor's Degree" = 4,
+                  "Master's Degree" = 5,
+                  "Doctorate Degree" = 6)
+ev_survey_results$education_num <- revalue(ev_survey_results$Education, education_num)
+  
 
 # See some info about this data:
 dim(ev_survey_results)
 head(ev_survey_results)
+
+# ============================================================================================================
+# ============================================================================================================
+
 
 
 
@@ -121,32 +136,11 @@ for ( i in observations ) {
 
 
 
-
-
-
-# Plots & Such...
+# Export Clean Data
 # =================================================================
-
-
-# Do Rural people find EVs practical? ( DOES NOT WORK)
-rural_people <- ev_survey_results %>% filter(ev_survey_results$Location_Type == "Rural")
-head(rural_people)
-hist(as.numeric(rural_people$attr_Practicality), 
-     main = "How practical do rural people find EVs?")
-
-
-suburban_people <- ev_survey_results %>% filter(ev_survey_results$Location_Type == "Suburban")
-hist(as.numeric(suburban_people$attr_Practicality), 
-     main = "How practical do Suburban people find EVs?")
-
-# How practical are EVs?
-hist(as.numeric(ev_survey_results$attr_Practicality), 
-     main = "How practical do people find EVs?")
-
-
-
-
-
+write.csv( x = ev_survey_results,
+           file = 'cleaner_ev_data.csv',
+           row.names = FALSE)
 
 
 
