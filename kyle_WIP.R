@@ -68,6 +68,7 @@ summary(lr_model)
 e <- 2.1718281
 
 # Coefficients:
+# Only two coefficients are significant.
 intercept <- -6.6048
 # Coef_Price      (Insignificant)
 # Coef_Range      (Insignificant)
@@ -75,55 +76,18 @@ Coef_Practicality <- 1.4777
 # Coef_Brand      (Insignificant)
 Coef_Carbon       <- 1.1081
 
-# Variables
-Practicality_Score <- 1
-Carbon_Score <- 1
+# PROBABILITY FUNCTION ----------------------------------------------------------------
+# Pass in values for a user's Practicality_Score and Carbon_Score to see the liklihood
+# that they will say their next car will be an EV:
+Probability <- function(Practicality_Score, Carbon_Score){
+  # Logit Equation:
+  Log_Odds <- intercept + 
+    ( Practicality_Score * Coef_Practicality) +
+    ( Carbon_Score * Coef_Carbon)
+  Odds <- e^Log_Odds # Calculate Odds:
+  Probability_num  <- Odds / (1 + Odds) # Calculate Probability
+  #return(Probability)
+}
+# ------------------------------------------------------------------------------------
 
-# Logit Equation:
-Log_Odds <- intercept + 
-  ( Practicality_Score * Coef_Practicality) +
-  ( Carbon_Score * Coef_Carbon)
-
-Odds <- e^Log_Odds
-Probability  <- Odds / (1 + Odds)
-  
-print(Probability)
-
-
-
-
-
-# Plots & Such...
-# =================================================================
-
-# Do Rural people find EVs practical? ( DOES NOT WORK)
-rural_people <- ev_survey_results %>% filter(ev_survey_results$Location_Type == "Rural")
-head(rural_people)
-hist(as.numeric(rural_people$attr_Practicality), 
-     main = "How practical do rural people find EVs?")
-
-
-suburban_people <- ev_survey_results %>% filter(ev_survey_results$Location_Type == "Suburban")
-hist(as.numeric(suburban_people$attr_Practicality), 
-     main = "How practical do Suburban people find EVs?")
-
-# How practical are EVs?
-hist(as.numeric(ev_survey_results$attr_Practicality), 
-     main = "How practical do people find EVs?")
-
-
-
-# Do people with more education care more about the environment? ------------------------------
-# Quick table showing Education Level vs Caring about Carbon Footprint:
-edu_and_carbon <- cbind(carbon_important = (ev_survey_results$attr_CarbonFootprint),
-                        education_level_num = (ev_survey_results$education_num),
-                        education_level = (ev_survey_results$Education))
-unique_edu <- unique(ev_survey_results$Education)
-# TODO:
-# take all of the people with a certain type of degree and
-#  Seperate them into a matching column with their carbon opinion
-#  Average that column
-#  save that average in a df with the name of the education level
-
-plot(ev_survey_results$education_num, ev_survey_results$attr_CarbonFootprint) # Need to think of a more useful way to plot this
 
